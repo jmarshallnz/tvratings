@@ -14,7 +14,9 @@ Below is a plot of the trend in TV viewership numbers from mid-February 2012 thr
 
 The data are sourced from Nielsen Television Audience Measurement, All 5+ by scraping the [Throng NZ website](http://www.throng.co.nz).  A useful reference for Nielsen TAM data is available [here](http://images.tvnz.co.nz/tvnz_images/planit/opportunities/week_24/measurement_of_tv.pdf).
 
-Due to the website scraping, there are several caveats with these data which are outlined below the plot. The source code for the plot, the website scraping, and this report are available on [github](https://github.com/jmarshallnz/tvratings).
+We then produce a smooth curve for the average of the ratings data for each show by fitting a generalised additive model to the data that allows a smooth curve where the amount of smoothing adapts to the way the data are changing. Essentially the model trades off fitting the data perfectly (and thus producing a very wiggly curve) against reducing the amount of noise (and producing a very smooth curve).
+
+Due to the website scraping, **there are several caveats with these data** which are outlined below the plot. The source code for the plot, the website scraping, and this report are available on [github](https://github.com/jmarshallnz/tvratings).
 
 ```{r, echo=FALSE, fig.width=8, fig.height=5}
 library(splines)
@@ -103,10 +105,7 @@ then it may not be among the top ratings across or channels, or even
 among the top ratings on TV3).  This also applies to repeats on TV3+1.
 Thus, we may be overestimating the average viewership for a show that
 isn't as popular as One News or 3 News due to poor ratings not
-showing up.  I can confirm that it happened at least once in the
-period analysed for Campbell Live (only the TV3+1 numbers were present
-in the report on [April 3rd, 2015](http://www.throng.co.nz/2015/04/tv-ratings-3-april-2005/),
-and that data was treated as missing for the analysis).
+showing up.
 
 4. The scraping technique may miss to grab the numbers for a show on
 some evenings, even though the information is there.  Basically what
