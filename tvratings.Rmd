@@ -12,11 +12,11 @@ Below is a plot of the trend in TV viewership numbers from mid-February 2012 thr
 * The current viewership for Campbell Live is similar to it's viewership at the end of 2012 and beginning of 2013.
 * Campbell Live's viewership doesn't tend to correlate as strongly with the viewership of 3 News compared to the shows on TV One.
 
-The data are sourced from Nielsen Television Audience Measurement, All 5+ by scraping the [Throng NZ website](http://www.throng.co.nz).  A useful reference for Nielsen TAM data is available [here](http://images.tvnz.co.nz/tvnz_images/planit/opportunities/week_24/measurement_of_tv.pdf).
+The data are sourced from Nielsen's Television Audience Measurement, All 5+ by scraping the [Throng NZ website](http://www.throng.co.nz).  A useful reference for the Nielsen TAM data is available [here](http://images.tvnz.co.nz/tvnz_images/planit/opportunities/week_24/measurement_of_tv.pdf). Due to the website scraping, **there are several caveats with these data** which are outlined below the plot. 
 
-We then produce a smooth curve for the average of the ratings data for each show by fitting a generalised additive model to the data that allows a smooth curve where the amount of smoothing adapts to the way the data are changing. Essentially the model trades off fitting the data perfectly (and thus producing a very wiggly curve) against reducing the amount of noise (and producing a very smooth curve).
+A smooth curve for the average of the ratings data for each show by fitting a generalised additive model to the data that allows a smooth curve where the amount of smoothing adapts to the way the data are changing. Essentially the model trades off fitting the data perfectly (and thus producing a very wiggly curve) against reducing the amount of noise (and producing a very smooth curve that doesn't fit the data well). A balance between these two extremes produces a curve that isn't too wiggly but still captures the variation in the data.
 
-Due to the website scraping, **there are several caveats with these data** which are outlined below the plot. The source code for the plot, the website scraping, and this report are available on [github](https://github.com/jmarshallnz/tvratings).
+The analysis and this report were created using [RStudio](http://rstudio.com). The source code for the plot, the website scraping, and this report are available on [github](https://github.com/jmarshallnz/tvratings).
 
 ```{r, echo=FALSE, fig.width=8, fig.height=5}
 library(splines)
@@ -83,13 +83,11 @@ text(max(ratings$Date)-7, max_viewers-10000, "General additive model with adapti
 Caveats
 -------
 
-Due to the method of obtaining the data, there are several sources of error:
+Due to the method of obtaining the data, there are several sources of error, listed in order of least likely to most likely.
 
-1. There's the potential (though I suspect not much) for transcription
-error when the reports are written up for [Throng NZ](http://www.throng.co.nz) from
-whatever data Nielsen is providing.  I'm not sure whether the reports
-on ThrongNZ are automated or not (if so, transcription errors are
-extremely unlikely).
+1. There is a small chance of transcription error if the data Nielsen provides requires human interaction to
+produce the reports on [Throng NZ](http://www.throng.co.nz). If the reports on ThrongNZ are automated, then
+no such errors are likely.
 
 2. The data published on [Throng NZ](http://www.throng.co.nz) are incomplete in that not all
 ratings days are present.  This is unlikely to cause much trouble
@@ -113,10 +111,10 @@ happens is the HTML source for the webpage is parsed with a regular
 expression to pick out certain bits that contain the info we want.  If
 for some reason the webpage layout is slightly different, or there is
 a typo in the show name, an extra space where it shouldn't be or some
-such, then we may miss it.  This may not happen completely at random
-(e.g. it may be associated with high or low show rates).
+such, then we may miss it.  Or, more likely, the code has a bug. This
+may not happen completely at random (e.g. it may be associated with high or low show rates).
 
-However, I suspect the above is minimal in the graph produced above.
+The above situations are most likely minimal in the graph produced above.
 Nonetheless, a more thorough analysis would want to use a better data
 source such as Nielsen directly, or perhaps whatever
 raw data [Throng NZ](http://www.throng.co.nz) may have.
