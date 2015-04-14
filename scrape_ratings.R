@@ -13,20 +13,29 @@ get_ratings <- function(shows, date) {
   ratings <- numeric(length(shows))
   names(ratings) <- shows
   for (show in seq_along(shows)) {
-    h <- html
-    vals <- numeric()
-    while (TRUE) {
-      f <- regexec(sprintf("<li>%s[^<]*: ([0-9,]+)[^<]*</li>", shows[show]), h)
-      if (f[[1]][1] == -1) {
-        break;
+    vals <- data.frame(regex=numeric(0), val=numeric(0))
+    # want to match "One News: ###,###"
+    # or "One News (6:00pm-7:00pm): ###,###"
+    # or "One News: TV ONE ###,###"
+    # but don't want to match: "One News Special: ###,###"
+    regex <- c(sprintf("<li>%s: ([0-9,]+)[^<]*</li>", shows[show]),
+               sprintf("<li>%s: [TVONE3 ]+ ([0-9,]+)[^<]*</li>", shows[show]),
+               sprintf("<li>%s[^<]\\): ([0-9,]+)[^<]*</li>", shows[show]))
+    for (j in seq_along(regex)) {
+      h <- html
+      while (TRUE) {
+        f <- regexec(regex[j], h)
+        if (f[[1]][1] == -1) {
+          break;
+        }
+        start <- f[[1]][2]
+        end   <- start + attr(f[[1]], "match.length")[2] - 1
+        val <- as.numeric(gsub(",", "", substring(h, start, end)))
+        vals <- rbind(vals, c(j,val))
+        h <- substring(h, end)
       }
-      start <- f[[1]][2]
-      end   <- start + attr(f[[1]], "match.length")[2] - 1
-      val <- as.numeric(gsub(",", "", substring(h, start, end)))
-      vals <- c(vals, val)
-      h <- substring(h, end)
     }
-    total <- sum(unique(vals))
+    total <- sum(unique(vals$val))
     ratings[show] <- ifelse(total == 0, NA, total)
   }
   ratings
