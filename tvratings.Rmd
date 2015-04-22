@@ -24,6 +24,7 @@ library(mgcv)
 library(dplyr)
 library(dygraphs)
 library(htmlwidgets)
+library(xts)
 
 ratings <- read.csv("news_current_affairs.csv")
 
@@ -137,16 +138,17 @@ cols_data <- fade_colour(cols, 160)
 max_viewers <- 1000001 #max(ratings[,show_cols], na.rm=T)
 
 rownames(ratings) <- ratings$Date
+ratings <- xts(ratings[,-6], order.by=ratings$Date)
 
 # draw the dygraph using a custom plotter for each series
-d <- dygraph(data=ratings[,-6], main="Viewership of news and current affairs");
+d <- dygraph(data=ratings, main="Viewership of news and current affairs");
 for (i in seq_along(show_cols))
   d <- d %>% dySeries(c(paste0("fit.",i,".mean"), names(ratings)[i], paste0("fit.",i,".se")), label=show_names[i], color=cols_fit[i], strokeWidth=0.5, plotter=JS(plot_se))
 
 xlab <- "<span style='color:#7f7f7f'>General additive model with adaptive smoothing and 95% credible intervals<br>Data source: Nielsen Television Audience Measurement, All 5+ via <a href='http://www.throng.co.nz'>www.throng.co.nz</a></span>"
 gray <- rgb(0.5, 0.5, 0.5)
 lightgray <- rgb(0.9, 0.9, 0.9)
-d %>% dyOptions(fillAlpha=0.4, maxNumberWidth=7) %>%
+d %>% dyOptions(fillAlpha=0.4, maxNumberWidth=7, useDataTimezone = TRUE) %>%
       dyAxis('x', label=xlab, labelHeight=12, drawGrid=FALSE,
              axisLineColor=gray, axisLabelColor=gray,
              axisLabelFontSize=10, valueFormatter=JS(date_fmt)) %>%
